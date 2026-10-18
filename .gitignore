@@ -38,3 +38,16 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+# secrets and local signing material
+.env
+.env.*
+!.env.example
+local.properties
+secrets.properties
+credentials.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
