@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "easy-trade",
+	"version": "${version}",
+	"name": "Easy Trade",
+	"description": "Quality-of-life tools for villager trading.",
+	"authors": [
+		"pedromartz"
+	],
+	"contact": {
+		"homepage": "https://pedromartz.com"
+	},
+	"license": "MIT",
+	"icon": "assets/easy-trade/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.pedromartz.easytrade.EasyTradeMod"
+		],
+		"client": [
+			"com.pedromartz.easytrade.client.EasyTradeClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
