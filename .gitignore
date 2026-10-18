@@ -40,6 +40,7 @@ replay_*.log
 *.jfr
 
 # secrets and local signing material
+AGENTS.md
 .env
 .env.*
 !.env.example
