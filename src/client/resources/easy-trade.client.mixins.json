@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "com.pedromartz.easytrade.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"MerchantScreenMixin",
+		"ScreenAccessor"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

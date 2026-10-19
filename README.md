@@ -2,11 +2,14 @@
 
 Fabric mod for quality-of-life improvements to villager trading.
 
+Implemented:
+
+- Show a tooltip-style label with only the enchantment name and level beside each enchanted-book offer, with a trade-screen button to toggle labels; normal item tooltips remain available on hover.
+
 Planned features:
 
 - Cycle villager trades without removing and replacing the workstation.
 - Preview locked villager trades.
-- Show enchantment labels on enchanted books in trade lists.
 
 ## Setup
 
