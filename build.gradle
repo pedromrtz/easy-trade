@@ -1,3 +1,6 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
@@ -29,6 +32,40 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+def easyTradeLanguageBundle = layout.projectDirectory.file("src/localization/easy-trade-languages.json")
+def generatedEasyTradeLanguages = layout.buildDirectory.dir("generated/easy-trade-languages")
+sourceSets.client.resources.srcDir(generatedEasyTradeLanguages)
+
+tasks.register("generateEasyTradeLanguages") {
+	inputs.file(easyTradeLanguageBundle)
+	outputs.dir(generatedEasyTradeLanguages)
+
+	doLast {
+		def bundle = new JsonSlurper().parse(easyTradeLanguageBundle.asFile)
+		def outputRoot = generatedEasyTradeLanguages.get().asFile
+
+		bundle.locales.each { locale ->
+			if (locale != "en_us" && locale != "es_es") {
+				def language = locale.split("_")[0]
+				def translations = bundle.translations[language] ?: bundle.translations["en"]
+				def messages = ["key.category.easy-trade.controls": "Easy Trade"]
+				bundle.keys.eachWithIndex { key, index -> messages[key] = translations[index] }
+				def languageFile = new File(outputRoot, "assets/easy-trade/lang/${locale}.json")
+				languageFile.parentFile.mkdirs()
+				languageFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(messages)) + System.lineSeparator(), "UTF-8")
+			}
+		}
+	}
+}
+
+tasks.named("processClientResources") {
+	dependsOn(tasks.named("generateEasyTradeLanguages"))
+}
+
+tasks.matching { it.name == "sourcesJar" }.configureEach {
+	dependsOn(tasks.named("generateEasyTradeLanguages"))
 }
 
 fabricApi {

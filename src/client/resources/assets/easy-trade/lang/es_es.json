@@ -4,8 +4,7 @@
 	"easy-trade.labels.tooltip.disabled": "Etiquetas de encantamientos: desactivadas",
 	"key.category.easy-trade.controls": "Easy Trade",
 	"key.easy-trade.cycle_trades": "Renovar ofertas del aldeano",
-	"easy-trade.cycling.button": "Renovar ofertas del aldeano",
-	"easy-trade.cycling.tooltip": "Renovar ofertas (%s)",
-	"easy-trade.cycling.locked": "Solo se pueden renovar las ofertas de aldeanos novatos con los que nunca se ha comerciado",
+	"easy-trade.cycling.tooltip": "Renovar ofertas",
+	"easy-trade.cycling.locked": "Solo se pueden renovar las ofertas de aldeanos novatos sin intercambios",
 	"easy-trade.cycling.waiting": "Renovando ofertas..."
 }

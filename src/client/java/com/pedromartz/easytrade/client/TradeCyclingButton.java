@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.inventory.MerchantMenu;
 
 public final class TradeCyclingButton extends Button.Plain {
@@ -21,7 +22,7 @@ public final class TradeCyclingButton extends Button.Plain {
 	private String tooltipKey = "";
 
 	public TradeCyclingButton(final int x, final int y, final MerchantMenu menu) {
-		super(x, y, 18, 18, Component.translatable("easy-trade.cycling.button"), button -> ClientTradeCycling.request(menu), DEFAULT_NARRATION);
+		super(x, y, 18, 18, Component.translatable("key.easy-trade.cycle_trades"), button -> ClientTradeCycling.request(menu), DEFAULT_NARRATION);
 		this.menu = menu;
 		this.updateState();
 	}
@@ -33,7 +34,13 @@ public final class TradeCyclingButton extends Button.Plain {
 			: ClientTradeCycling.isEligible(this.menu) ? "easy-trade.cycling.tooltip" : "easy-trade.cycling.locked";
 		if (!key.equals(this.tooltipKey)) {
 			this.tooltipKey = key;
-			this.setTooltip(Tooltip.create(Component.translatable(key, ClientTradeCycling.cycleKey().getTranslatedKeyMessage())));
+			MutableComponent tooltip = Component.translatable(key);
+			if (key.equals("easy-trade.cycling.tooltip")) {
+				tooltip = tooltip.append(Component.literal(" ("))
+					.append(ClientTradeCycling.cycleKey().getTranslatedKeyMessage())
+					.append(Component.literal(")"));
+			}
+			this.setTooltip(Tooltip.create(tooltip));
 		}
 	}
 
