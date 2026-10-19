@@ -2,6 +2,7 @@ package com.pedromartz.easytrade.network;
 
 import com.pedromartz.easytrade.mixin.MerchantMenuAccessor;
 import com.pedromartz.easytrade.trading.LockedTradeOfferService;
+import com.pedromartz.easytrade.trading.TradeOfferGroup;
 import java.util.List;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerLevel;
@@ -30,7 +31,7 @@ public final class LockedTradeServerNetworking {
 			return;
 		}
 
-		List<com.pedromartz.easytrade.trading.TradeOfferGroup> groups =
+		List<TradeOfferGroup> groups =
 			LockedTradeOfferService.getOrGenerate(villager, (ServerLevel)villager.level()).groups();
 		if (ServerPlayNetworking.canSend(player, LockedTradesPayload.TYPE)) {
 			ServerPlayNetworking.send(player, new LockedTradesPayload(menu.containerId, payload.requestId(), groups));

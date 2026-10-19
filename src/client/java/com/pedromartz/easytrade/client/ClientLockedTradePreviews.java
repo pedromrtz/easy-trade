@@ -80,10 +80,6 @@ public final class ClientLockedTradePreviews {
 		}
 	}
 
-	public static void remove(final int containerId) {
-		PREVIEWS.remove(containerId);
-	}
-
 	private static String currentVillagerState() {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft.level == null || !(minecraft.level.getEntity(lastInteractedVillagerId) instanceof Villager villager)) {

@@ -3,15 +3,6 @@ import groovy.json.JsonSlurper
 
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
-	id 'maven-publish'
-}
-
-repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
 }
 
 loom {
@@ -44,7 +35,22 @@ tasks.register("generateEasyTradeLanguages") {
 
 	doLast {
 		def bundle = new JsonSlurper().parse(easyTradeLanguageBundle.asFile)
+		if (!bundle.keys || !bundle.locales || !bundle.translations.en) {
+			throw new GradleException("The Easy Trade language bundle must define keys, locales, and English translations")
+		}
+		if (bundle.locales.toSet().size() != bundle.locales.size()) {
+			throw new GradleException("The Easy Trade language bundle contains duplicate locales")
+		}
+		bundle.translations.each { language, translations ->
+			if (translations.size() != bundle.keys.size()) {
+				throw new GradleException("Translation '$language' does not provide a string for every key")
+			}
+		}
+
 		def outputRoot = generatedEasyTradeLanguages.get().asFile
+		if (outputRoot.exists() && !outputRoot.deleteDir()) {
+			throw new GradleException("Could not clean generated Easy Trade language resources")
+		}
 
 		bundle.locales.each { locale ->
 			if (locale != "en_us" && locale != "es_es") {
@@ -106,22 +112,5 @@ jar {
 
 	from("LICENSE") {
 		rename { "${it}_$projectName"}
-	}
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		create("mavenJava", MavenPublication) {
-			from components.java
-		}
-	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
 	}
 }
