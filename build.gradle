@@ -23,6 +23,15 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Mod Menu is only needed at compile time; the integration is optional at runtime.
+	compileOnly "com.terraformersmc:modmenu:21.0.0"
+}
+
+repositories {
+	maven {
+		url = "https://maven.terraformersmc.com/releases"
+	}
 }
 
 def easyTradeLanguageBundle = layout.projectDirectory.file("src/localization/easy-trade-languages.json")
@@ -58,6 +67,27 @@ tasks.register("generateEasyTradeLanguages") {
 				def translations = bundle.translations[language] ?: bundle.translations["en"]
 				def messages = ["key.category.easy-trade.controls": "Easy Trade"]
 				bundle.keys.eachWithIndex { key, index -> messages[key] = translations[index] }
+				messages.putAll(language == "es" ? [
+					"easy-trade.config.title": "Configuración de Easy Trade",
+					"easy-trade.config.labels": "Etiquetas de libros encantados",
+					"easy-trade.config.previews": "Vista previa de intercambios bloqueados",
+					"easy-trade.config.cycling": "Ciclado de intercambios",
+					"easy-trade.config.enabled": "Activado",
+					"easy-trade.config.disabled": "Desactivado",
+					"easy-trade.config.done": "Listo",
+					"easy-trade.config.cancel": "Cancelar",
+					"easy-trade.config.save": "Guardar y salir"
+				] : [
+					"easy-trade.config.title": "Easy Trade Settings",
+					"easy-trade.config.labels": "Enchanted-book labels",
+					"easy-trade.config.previews": "Locked-trade previews",
+					"easy-trade.config.cycling": "Trade cycling",
+					"easy-trade.config.enabled": "Enabled",
+					"easy-trade.config.disabled": "Disabled",
+					"easy-trade.config.done": "Done",
+					"easy-trade.config.cancel": "Cancel",
+					"easy-trade.config.save": "Save & Exit"
+				])
 				def languageFile = new File(outputRoot, "assets/easy-trade/lang/${locale}.json")
 				languageFile.parentFile.mkdirs()
 				languageFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(messages)) + System.lineSeparator(), "UTF-8")

@@ -11,18 +11,17 @@ import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.network.chat.Component;
 
 public final class EnchantmentTradeLabelRenderer {
-	private static boolean labelsVisible = true;
-
 	private EnchantmentTradeLabelRenderer() {
 	}
 
 	public static boolean areLabelsVisible() {
-		return labelsVisible;
+		return EasyTradeConfig.areEnchantmentLabelsEnabled();
 	}
 
 	public static boolean toggleLabels() {
-		labelsVisible = !labelsVisible;
-		return labelsVisible;
+		boolean enabled = !EasyTradeConfig.areEnchantmentLabelsEnabled();
+		EasyTradeConfig.setEnchantmentLabelsEnabled(enabled);
+		return enabled;
 	}
 
 	public static void drawAll(final GuiGraphicsExtractor graphics, final List<Label> labels) {

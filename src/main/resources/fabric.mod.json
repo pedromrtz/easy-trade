@@ -19,6 +19,9 @@
 		],
 		"client": [
 			"com.pedromartz.easytrade.client.EasyTradeClient"
+		],
+		"modmenu": [
+			"com.pedromartz.easytrade.client.EasyTradeModMenu"
 		]
 	},
 	"mixins": [
@@ -33,5 +36,8 @@
 		"minecraft": "~26.3",
 		"java": ">=25",
 		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
 	}
 }

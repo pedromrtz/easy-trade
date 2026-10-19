@@ -49,11 +49,13 @@ public final class ClientTradeCycling {
 	}
 
 	public static boolean canCycle(final MerchantMenu menu) {
-		return isSupported() && isEligible(menu) && !isWaiting(menu) && System.nanoTime() >= nextRequestTime;
+		return EasyTradeConfig.isTradeCyclingEnabled() && isSupported() && isEligible(menu)
+			&& !isWaiting(menu) && System.nanoTime() >= nextRequestTime;
 	}
 
 	public static boolean request(final MerchantMenu menu) {
-		if (!canCycle(menu) || Minecraft.getInstance().player == null || Minecraft.getInstance().player.containerMenu != menu) {
+		if (!EasyTradeConfig.isTradeCyclingEnabled() || !canCycle(menu)
+			|| Minecraft.getInstance().player == null || Minecraft.getInstance().player.containerMenu != menu) {
 			return false;
 		}
 		pendingRequestId = ++nextRequestId;

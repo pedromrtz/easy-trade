@@ -18,6 +18,12 @@ Easy Trade adds clearer enchanted-book offers, previews for locked villager trad
 - **Locked-trade previews:** when the server has Easy Trade, preview future offers using the server's trade data. Cached previews are reused when the villager levels up.
 - **Trade cycling:** refresh an untraded novice villager's offers from the trade screen or press **C**. The key can be rebound in **Options → Controls**. Cycling does not replace the workstation or consume payment items.
 
+## Configuration
+
+Install [Mod Menu](https://modrinth.com/mod/modmenu) to open Easy Trade's configuration screen from the Mods list. Mod Menu is optional; Easy Trade works without it, but the settings screen is only available when Mod Menu is installed. No additional configuration library is required.
+
+The screen has local-player toggles for enchanted-book labels, locked-trade previews, and trade cycling. Choose **Save & Exit** to apply changes or **Cancel** to discard them. Preferences are stored in `config/easy-trade.json` in the Minecraft instance folder. The enchanted-book label toggle is also available directly in the villager trade screen.
+
 Cycling is available only while the villager is an untraded novice. The server validates every request, applies a short cooldown, and refreshes the displayed trade selection and locked-offer preview.
 
 ## Compatibility
@@ -37,8 +43,9 @@ When the client mod is installed without server support, enchantment labels rema
 ## Installation
 
 1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for Minecraft 26.3 and the matching [Fabric API](https://modrinth.com/mod/fabric-api).
-2. Download the Easy Trade JAR from the [GitHub Releases](https://github.com/pedromrtz/easy-trade/releases) page.
-3. Place the JAR in the instance's `mods` folder. Install it on the server as well to enable cycling and locked-trade previews there.
+2. Optionally install [Mod Menu](https://modrinth.com/mod/modmenu) to access the Easy Trade settings screen.
+3. Download the Easy Trade JAR from the [GitHub Releases](https://github.com/pedromrtz/easy-trade/releases) page.
+4. Place the JAR in the instance's `mods` folder. Install it on the server as well to enable cycling and locked-trade previews there.
 
 ## Build from source
 

@@ -6,5 +6,14 @@
 	"key.easy-trade.cycle_trades": "Refresh villager offers",
 	"easy-trade.cycling.tooltip": "Refresh offers",
 	"easy-trade.cycling.locked": "Trade cycling is only available for untraded novice villagers",
-	"easy-trade.cycling.waiting": "Refreshing offers..."
+	"easy-trade.cycling.waiting": "Refreshing offers...",
+	"easy-trade.config.title": "Easy Trade Settings",
+	"easy-trade.config.labels": "Enchanted-book labels",
+	"easy-trade.config.previews": "Locked-trade previews",
+	"easy-trade.config.cycling": "Trade cycling",
+	"easy-trade.config.enabled": "Enabled",
+	"easy-trade.config.disabled": "Disabled",
+	"easy-trade.config.done": "Done",
+	"easy-trade.config.cancel": "Cancel",
+	"easy-trade.config.save": "Save & Exit"
 }

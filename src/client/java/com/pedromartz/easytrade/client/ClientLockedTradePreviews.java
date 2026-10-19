@@ -29,6 +29,9 @@ public final class ClientLockedTradePreviews {
 	public static void requestServerPreview(final MerchantMenu menu) {
 		int containerId = menu.containerId;
 		PREVIEWS.clear();
+		if (!EasyTradeConfig.areLockedTradePreviewsEnabled()) {
+			return;
+		}
 		int currentOfferCount = menu.getOffers().size();
 		int requestId = ++nextRequestId;
 		String villagerState = currentVillagerState();
@@ -41,7 +44,14 @@ public final class ClientLockedTradePreviews {
 	}
 
 	public static Preview get(final int containerId) {
+		if (!EasyTradeConfig.areLockedTradePreviewsEnabled()) {
+			return null;
+		}
 		return PREVIEWS.get(containerId);
+	}
+
+	public static void clear() {
+		PREVIEWS.clear();
 	}
 
 	public static void updateCurrentOfferCount(final int containerId, final int offerCount) {

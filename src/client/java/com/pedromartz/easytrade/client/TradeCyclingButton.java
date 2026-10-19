@@ -28,7 +28,7 @@ public final class TradeCyclingButton extends Button.Plain {
 	}
 
 	public void updateState() {
-		this.visible = ClientTradeCycling.isSupported();
+		this.visible = EasyTradeConfig.isTradeCyclingEnabled() && ClientTradeCycling.isSupported();
 		this.active = this.visible && ClientTradeCycling.canCycle(this.menu);
 		String key = ClientTradeCycling.isWaiting(this.menu) ? "easy-trade.cycling.waiting"
 			: ClientTradeCycling.isEligible(this.menu) ? "easy-trade.cycling.tooltip" : "easy-trade.cycling.locked";
