@@ -27,9 +27,6 @@ public final class EnchantmentLabelsToggleButton extends Button.Plain {
 	protected void extractContents(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
 		int x = this.getX();
 		int y = this.getY();
-		if (this.isHoveredOrFocused()) {
-			graphics.fill(x - 1, y - 1, x + 17, y + 17, 0x805F526B);
-		}
 
 		graphics.pose().pushMatrix();
 		graphics.pose().translate((1.0F - ICON_SCALE) * (x + 8), (1.0F - ICON_SCALE) * (y + 8));
