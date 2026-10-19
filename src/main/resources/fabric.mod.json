@@ -22,6 +22,7 @@
 		]
 	},
 	"mixins": [
+		"easy-trade.mixins.json",
 		{
 			"config": "easy-trade.client.mixins.json",
 			"environment": "client"

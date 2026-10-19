@@ -3,6 +3,7 @@ package com.pedromartz.easytrade.client.mixin;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pedromartz.easytrade.client.ClientLockedTradePreviews;
 import com.pedromartz.easytrade.client.EnchantmentLabelsToggleButton;
 import com.pedromartz.easytrade.client.EnchantmentTradeLabelRenderer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.trading.MerchantOffers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -33,6 +35,10 @@ public abstract class MerchantScreenMixin {
 
 	@Shadow
 	private int scrollOff;
+	@Shadow
+	private int shopItem;
+	@Unique
+	private int easyTrade$previewContainerId = -1;
 
 	@Inject(method = "init", at = @At("TAIL"))
 	private void easyTrade$addLabelsToggleButton(final CallbackInfo callbackInfo) {
@@ -51,23 +57,50 @@ public abstract class MerchantScreenMixin {
 			}
 		);
 		((ScreenAccessor)(Object)this).easyTrade$invokeAddRenderableWidget(toggleButton);
+
+		if (this.easyTrade$previewContainerId != screen.getMenu().containerId) {
+			this.easyTrade$previewContainerId = screen.getMenu().containerId;
+			ClientLockedTradePreviews.requestServerPreview(screen.getMenu());
+		}
+	}
+
+	@Inject(method = "postButtonClick", at = @At("HEAD"), cancellable = true)
+	private void easyTrade$preventLockedTradeSelection(final CallbackInfo callbackInfo) {
+		MerchantScreen screen = (MerchantScreen)(Object)this;
+		ClientLockedTradePreviews.Preview preview = ClientLockedTradePreviews.get(screen.getMenu().containerId);
+		if (preview != null && this.shopItem >= preview.currentOfferCount()) {
+			this.shopItem = Math.max(0, preview.currentOfferCount() - 1);
+			callbackInfo.cancel();
+		}
 	}
 
 	@Inject(method = "extractContents", at = @At("TAIL"))
 	private void easyTrade$renderEnchantmentLabels(
 		final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta, final CallbackInfo callbackInfo
 	) {
-		if (!EnchantmentTradeLabelRenderer.areLabelsVisible()) {
-			return;
-		}
-
 		MerchantScreen screen = (MerchantScreen)(Object)this;
 		MerchantMenu menu = screen.getMenu();
+		ClientLockedTradePreviews.refreshIfVillagerChanged(menu);
 		MerchantOffers offers = menu.getOffers();
 		int left = screen.width / 2 - SCREEN_LEFT_OFFSET;
 		int top = screen.height / 2 - SCREEN_TOP_OFFSET;
 
 		int visibleEnd = Math.min(offers.size(), this.scrollOff + VISIBLE_OFFER_COUNT);
+		ClientLockedTradePreviews.Preview preview = ClientLockedTradePreviews.get(menu.containerId);
+		if (preview != null) {
+			int firstLockedOffer = Math.max(this.scrollOff, preview.currentOfferCount());
+			for (int offerIndex = firstLockedOffer; offerIndex < visibleEnd; offerIndex++) {
+				int row = offerIndex - this.scrollOff;
+				int rowX = left + 5;
+				int rowY = top + 18 + row * OFFER_ROW_HEIGHT;
+				graphics.fill(rowX, rowY, left + 93, rowY + OFFER_ROW_HEIGHT, 0x66000000);
+			}
+		}
+
+		if (!EnchantmentTradeLabelRenderer.areLabelsVisible()) {
+			return;
+		}
+
 		List<EnchantmentTradeLabelRenderer.Label> labels = new ArrayList<>();
 		for (int offerIndex = this.scrollOff; offerIndex < visibleEnd; offerIndex++) {
 			ItemStack result = offers.get(offerIndex).getResult();

@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "com.pedromartz.easytrade.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"AbstractVillagerTradeAccessor",
+		"AbstractVillagerTradeMixin",
+		"MerchantMenuAccessor",
+		"VillagerLockedTradesMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

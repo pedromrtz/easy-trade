@@ -1,7 +1,11 @@
 package com.pedromartz.easytrade;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
+import com.pedromartz.easytrade.network.LockedTradesPayload;
+import com.pedromartz.easytrade.network.LockedTradeServerNetworking;
+import com.pedromartz.easytrade.network.RequestLockedTradesPayload;
 import net.minecraft.resources.Identifier;
 
 import org.slf4j.Logger;
@@ -22,6 +26,9 @@ public class EasyTradeMod implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Easy Trade initialized.");
+		PayloadTypeRegistry.serverboundPlay().register(RequestLockedTradesPayload.TYPE, RequestLockedTradesPayload.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(LockedTradesPayload.TYPE, LockedTradesPayload.STREAM_CODEC);
+		LockedTradeServerNetworking.register();
 	}
 
 	public static Identifier id(String path) {

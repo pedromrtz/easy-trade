@@ -5,11 +5,11 @@ Fabric mod for quality-of-life improvements to villager trading.
 Implemented:
 
 - Show a tooltip-style label with only the enchantment name and level beside each enchanted-book offer, with a trade-screen button to toggle labels; normal item tooltips remain available on hover.
+- Preview locked villager offers when Easy Trade is installed on the server. Previews use server trade registries and are reused when the villager levels up; a client joining a server without Easy Trade simply gets no locked-offer preview.
 
 Planned features:
 
 - Cycle villager trades without removing and replacing the workstation.
-- Preview locked villager trades.
 
 ## Setup
 
