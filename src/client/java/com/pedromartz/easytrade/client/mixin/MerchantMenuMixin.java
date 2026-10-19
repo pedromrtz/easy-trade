@@ -1,6 +1,7 @@
 package com.pedromartz.easytrade.client.mixin;
 
 import com.pedromartz.easytrade.client.ClientLockedTradePreviews;
+import com.pedromartz.easytrade.mixin.MerchantMenuAccessor;
 import com.pedromartz.easytrade.trading.TradeOfferGroup;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.trading.MerchantOffers;
@@ -20,6 +21,10 @@ public abstract class MerchantMenuMixin {
 	@Inject(method = "getOffers", at = @At("RETURN"), cancellable = true)
 	private void easyTrade$appendLockedOffers(final CallbackInfoReturnable<MerchantOffers> callbackInfo) {
 		MerchantMenu menu = (MerchantMenu)(Object)this;
+		// In singleplayer this mixin also exists on the integrated server's menus.
+		if (!((MerchantMenuAccessor)menu).easyTrade$getTrader().isClientSide()) {
+			return;
+		}
 		MerchantOffers originalOffers = callbackInfo.getReturnValue();
 		ClientLockedTradePreviews.updateCurrentOfferCount(menu.containerId, originalOffers.size());
 		ClientLockedTradePreviews.Preview preview = ClientLockedTradePreviews.get(menu.containerId);

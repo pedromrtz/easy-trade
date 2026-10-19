@@ -1,5 +1,11 @@
 {
 	"easy-trade.labels.button.accessible": "Toggle enchanted-book labels",
 	"easy-trade.labels.tooltip.enabled": "Enchantment labels: on",
-	"easy-trade.labels.tooltip.disabled": "Enchantment labels: off"
+	"easy-trade.labels.tooltip.disabled": "Enchantment labels: off",
+	"key.category.easy-trade.controls": "Easy Trade",
+	"key.easy-trade.cycle_trades": "Cycle villager trades",
+	"easy-trade.cycling.button": "Cycle villager trades",
+	"easy-trade.cycling.tooltip": "Refresh trades (%s)",
+	"easy-trade.cycling.locked": "Only novice villagers that have never been traded with can refresh their trades",
+	"easy-trade.cycling.waiting": "Refreshing trades..."
 }

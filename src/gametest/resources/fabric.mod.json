@@ -1,0 +1,11 @@
+{
+	"schemaVersion": 1,
+	"id": "easy-trade-test",
+	"version": "1.0.0",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"com.pedromartz.easytrade.TradeCyclingGameTests"
+		]
+	}
+}

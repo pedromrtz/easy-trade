@@ -5,7 +5,8 @@
 	"client": [
 		"MerchantScreenMixin",
 		"ScreenAccessor",
-		"MerchantMenuMixin"
+		"MerchantMenuMixin",
+		"TradeCyclingKeyMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

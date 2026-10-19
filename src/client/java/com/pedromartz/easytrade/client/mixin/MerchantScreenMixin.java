@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pedromartz.easytrade.client.ClientLockedTradePreviews;
+import com.pedromartz.easytrade.client.ClientTradeCycling;
 import com.pedromartz.easytrade.client.EnchantmentLabelsToggleButton;
 import com.pedromartz.easytrade.client.EnchantmentTradeLabelRenderer;
+import com.pedromartz.easytrade.client.TradeCyclingButton;
+import com.pedromartz.easytrade.client.TradeCyclingScreen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.core.component.DataComponents;
@@ -25,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MerchantScreen.class)
-public abstract class MerchantScreenMixin {
+public abstract class MerchantScreenMixin implements TradeCyclingScreen {
 	private static final int SCREEN_LEFT_OFFSET = 138;
 	private static final int SCREEN_TOP_OFFSET = 83;
 	private static final int FIRST_OFFER_X = 73;
@@ -39,6 +42,14 @@ public abstract class MerchantScreenMixin {
 	private int shopItem;
 	@Unique
 	private int easyTrade$previewContainerId = -1;
+	@Unique
+	private TradeCyclingButton easyTrade$cycleButton;
+
+	@Override
+	public void easyTrade$resetTradeSelection() {
+		this.shopItem = 0;
+		this.scrollOff = 0;
+	}
 
 	@Inject(method = "init", at = @At("TAIL"))
 	private void easyTrade$addLabelsToggleButton(final CallbackInfo callbackInfo) {
@@ -57,10 +68,27 @@ public abstract class MerchantScreenMixin {
 			}
 		);
 		((ScreenAccessor)(Object)this).easyTrade$invokeAddRenderableWidget(toggleButton);
+		this.easyTrade$cycleButton = new TradeCyclingButton(left + 105, top + 5, screen.getMenu());
+		((ScreenAccessor)(Object)this).easyTrade$invokeAddRenderableWidget(this.easyTrade$cycleButton);
 
 		if (this.easyTrade$previewContainerId != screen.getMenu().containerId) {
+			ClientTradeCycling.clearPendingRequest();
 			this.easyTrade$previewContainerId = screen.getMenu().containerId;
 			ClientLockedTradePreviews.requestServerPreview(screen.getMenu());
+		}
+	}
+
+	@Inject(method = "extractContents", at = @At("HEAD"))
+	private void easyTrade$updateCyclingControls(
+		final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta, final CallbackInfo callbackInfo
+	) {
+		MerchantScreen screen = (MerchantScreen)(Object)this;
+		MerchantOffers offers = screen.getMenu().getOffers();
+		// Cycling replaces the list, which can shrink while the user is scrolled to locked rows.
+		this.shopItem = Math.max(0, Math.min(this.shopItem, offers.size() - 1));
+		this.scrollOff = Math.max(0, Math.min(this.scrollOff, offers.size() - VISIBLE_OFFER_COUNT));
+		if (this.easyTrade$cycleButton != null) {
+			this.easyTrade$cycleButton.updateState();
 		}
 	}
 

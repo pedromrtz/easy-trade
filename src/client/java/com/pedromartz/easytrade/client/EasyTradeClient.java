@@ -9,6 +9,7 @@ import com.pedromartz.easytrade.network.LockedTradesPayload;
 public class EasyTradeClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		ClientTradeCycling.initialize();
 		ClientPlayNetworking.registerGlobalReceiver(LockedTradesPayload.TYPE, (payload, context) ->
 			context.client().execute(() -> ClientLockedTradePreviews.receive(payload))
 		);
