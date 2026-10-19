@@ -1,30 +1,80 @@
-# Easy Trade
+<div align="center">
+  <img src="./src/main/resources/assets/easy-trade/icon.png" alt="Easy Trade mod icon" width="128" />
+  <h1>Easy Trade</h1>
+  <p>Small quality-of-life improvements for Minecraft villager trading.</p>
+  <p>
+    <a href="https://github.com/pedromrtz/easy-trade">GitHub repository</a>
+    · Minecraft 26.3
+    · Fabric
+    · Java 25
+  </p>
+</div>
 
-Fabric mod for quality-of-life improvements to villager trading.
+Easy Trade adds clearer enchanted-book offers, previews for locked villager trades, and a server-validated way to refresh eligible villager offers.
 
-Implemented:
+## Features
 
-- Show a tooltip-style label with only the enchantment name and level beside each enchanted-book offer, with a trade-screen button to toggle labels; normal item tooltips remain available on hover.
-- Preview locked villager offers when Easy Trade is installed on the server. Previews use server trade registries and are reused when the villager levels up; a client joining a server without Easy Trade simply gets no locked-offer preview.
-- Cycle untraded novice villagers' offers using the refresh icon in the trade screen or **C** (reassignable in Controls), without replacing their workstation or waiting for working hours. Cycling also refreshes locked-offer previews. Once any trade has been completed, cycling is disabled.
+- **Enchantment labels:** show enchantment names and levels beside enchanted-book offers. Toggle the labels from the trade screen; the regular item tooltip remains available on hover.
+- **Locked-trade previews:** when the server has Easy Trade, preview future offers using the server's trade data. Cached previews are reused when the villager levels up.
+- **Trade cycling:** refresh an untraded novice villager's offers from the trade screen or press **C**. The key can be rebound in **Options → Controls**. Cycling does not replace the workstation or consume payment items.
 
-Cycling and locked-offer previews work in singleplayer and on servers with Easy Trade installed.
-On servers without Easy Trade, only the client-side enchantment labels are available; the cycling control is hidden.
-Servers with Easy Trade also accept clients without the mod, which continue to use the vanilla trade screen.
+Cycling is available only while the villager is an untraded novice. The server validates every request, applies a short cooldown, and refreshes the displayed trade selection and locked-offer preview.
 
-## Setup
+## Compatibility
 
-For IDE setup, see the [Fabric project setup guide](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up).
+| Where Easy Trade is installed | Available features |
+| --- | --- |
+| Client only | Enchanted-book labels |
+| Client and server | Enchanted-book labels, locked-trade previews, and trade cycling |
+| Server only | Unmodded clients keep the vanilla trade screen |
 
-The initial target is Minecraft 26.3. Additional Minecraft versions will be
-added as separate, tested builds when selected; Minecraft and Fabric API changes
-may require version-specific code.
+In singleplayer, the integrated server provides the server-side features. The server does not require clients to install Easy Trade; clients without the mod continue using the vanilla trade screen.
+When the client mod is installed without server support, enchantment labels remain available while the cycling control stays hidden and locked-trade previews are unavailable.
 
-Build with JDK 25 and `./gradlew build` (`.\gradlew.bat build` on Windows).
-The build includes server game tests for cycling eligibility, invalid requests, cooldowns,
-preserving payment items, and invalidating locked-offer previews. To run those tests alone,
-use `.\gradlew.bat runGameTest`.
+> [!NOTE]
+> The first supported game version is **Minecraft 26.3**. Use a matching Fabric Loader and Fabric API for that Minecraft version.
 
-## License
+## Installation
 
-Easy Trade is licensed under the MIT License. See [LICENSE](LICENSE).
+1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for Minecraft 26.3 and the matching [Fabric API](https://modrinth.com/mod/fabric-api).
+2. Download the Easy Trade JAR from the [GitHub Releases](https://github.com/pedromrtz/easy-trade/releases) page.
+3. Place the JAR in the instance's `mods` folder. Install it on the server as well to enable cycling and locked-trade previews there.
+
+## Build from source
+
+You need **JDK 25**. Clone the repository and run the Gradle wrapper from the project root:
+
+```bash
+git clone https://github.com/pedromrtz/easy-trade.git
+cd easy-trade
+./gradlew build
+```
+
+On Windows PowerShell, run:
+
+```powershell
+.\gradlew.bat build
+```
+
+The runnable mod JAR is written to `build/libs/easy-trade-1.0.0.jar` (do not use the `-sources.jar`). The build compiles common and client code, generates language resources, and runs the server game tests.
+
+To run the game tests without the full build:
+
+```powershell
+.\gradlew.bat runGameTest
+```
+
+On macOS or Linux, use `./gradlew runGameTest`.
+
+The tests cover cycling eligibility, invalid requests, request cooldowns, preservation of payment items, and locked-offer cache invalidation.
+
+## Project layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/main/java` | Server/common code, networking, trade logic, and common mixins |
+| `src/client/java` | Client UI, enchantment labels, and client mixins |
+| `src/gametest` | Server game tests; excluded from the distributable mod JAR |
+| `src/localization/easy-trade-languages.json` | Source strings and locale mappings used to generate language resources |
+
+Language files are generated for Minecraft's 142 locales. The current bundle includes translations for 34 non-English base languages; other locales use the English fallback.
