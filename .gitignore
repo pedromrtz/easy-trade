@@ -2,6 +2,7 @@
 
 .gradle/
 build/
+target-artifacts/
 out/
 classes/
 

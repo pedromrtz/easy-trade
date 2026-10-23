@@ -9,4 +9,4 @@ pluginManagement {
 	}
 }
 
-rootProject.name = 'easy-trade'
+rootProject.name = 'trade-assistant'

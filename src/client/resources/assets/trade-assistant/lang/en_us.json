@@ -1,0 +1,19 @@
+{
+	"trade-assistant.labels.button.accessible": "Toggle enchanted-book labels",
+	"trade-assistant.labels.tooltip.enabled": "Enchantment labels: on",
+	"trade-assistant.labels.tooltip.disabled": "Enchantment labels: off",
+	"key.category.trade-assistant.controls": "Trade Assistant",
+	"key.trade-assistant.cycle_trades": "Refresh villager offers",
+	"trade-assistant.cycling.tooltip": "Refresh offers",
+	"trade-assistant.cycling.locked": "Trade cycling is only available for untraded novice villagers",
+	"trade-assistant.cycling.waiting": "Refreshing offers...",
+	"trade-assistant.config.title": "Trade Assistant Settings",
+	"trade-assistant.config.labels": "Enchanted-book labels",
+	"trade-assistant.config.previews": "Locked-trade previews",
+	"trade-assistant.config.cycling": "Trade cycling",
+	"trade-assistant.config.enabled": "Enabled",
+	"trade-assistant.config.disabled": "Disabled",
+	"trade-assistant.config.done": "Done",
+	"trade-assistant.config.cancel": "Cancel",
+	"trade-assistant.config.save": "Save & Exit"
+}

@@ -1,0 +1,370 @@
+﻿[
+    {
+        "minecraft":  "26.3",
+        "javaMinimum":  25,
+        "javaCompile":  25,
+        "fabricLoader":  "0.19.5",
+        "fabricApi":  "0.164.0+26.3",
+        "modMenu":  "21.0.0"
+    },
+    {
+        "minecraft":  "26.2",
+        "javaMinimum":  25,
+        "javaCompile":  25,
+        "fabricLoader":  "0.19.5",
+        "fabricApi":  "0.161.0+26.2",
+        "modMenu":  "20.0.3"
+    },
+    {
+        "minecraft":  "26.1",
+        "javaMinimum":  25,
+        "javaCompile":  25,
+        "fabricLoader":  "0.19.5",
+        "fabricApi":  "0.155.3+26.1.2",
+        "modMenu":  "18.0.2"
+    },
+    {
+        "minecraft":  "1.21.11",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.17.3",
+        "fabricApi":  "0.141.6+1.21.11",
+        "modMenu":  "17.0.1"
+    },
+    {
+        "minecraft":  "1.21.10",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.138.4+1.21.10",
+        "modMenu":  "16.0.1"
+    },
+    {
+        "minecraft":  "1.21.9",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.134.1+1.21.9",
+        "modMenu":  "16.0.1"
+    },
+    {
+        "minecraft":  "1.21.8",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.136.1+1.21.8",
+        "modMenu":  "15.0.2"
+    },
+    {
+        "minecraft":  "1.21.7",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.129.0+1.21.7",
+        "modMenu":  "15.0.2"
+    },
+    {
+        "minecraft":  "1.21.6",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.128.2+1.21.6",
+        "modMenu":  "15.0.2"
+    },
+    {
+        "minecraft":  "1.21.5",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.128.2+1.21.5",
+        "modMenu":  "14.0.2"
+    },
+    {
+        "minecraft":  "1.21.4",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.119.4+1.21.4",
+        "modMenu":  "13.0.4"
+    },
+    {
+        "minecraft":  "1.21.3",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.114.1+1.21.3",
+        "modMenu":  "12.0.1"
+    },
+    {
+        "minecraft":  "1.21.2",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.106.1+1.21.2",
+        "modMenu":  "12.0.1"
+    },
+    {
+        "minecraft":  "1.21.1",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.116.17+1.21.1",
+        "modMenu":  "11.0.5"
+    },
+    {
+        "minecraft":  "1.21",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.102.0+1.21",
+        "modMenu":  "11.0.5"
+    },
+    {
+        "minecraft":  "1.20.6",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.100.8+1.20.6",
+        "modMenu":  "10.0.0"
+    },
+    {
+        "minecraft":  "1.20.5",
+        "javaMinimum":  21,
+        "javaCompile":  21,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.97.8+1.20.5",
+        "modMenu":  "10.0.0"
+    },
+    {
+        "minecraft":  "1.20.4",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.97.3+1.20.4",
+        "modMenu":  "9.2.0"
+    },
+    {
+        "minecraft":  "1.20.3",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.91.1+1.20.3",
+        "modMenu":  "9.0.0"
+    },
+    {
+        "minecraft":  "1.20.2",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.91.6+1.20.2",
+        "modMenu":  "8.0.1"
+    },
+    {
+        "minecraft":  "1.20.1",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.92.12+1.20.1",
+        "modMenu":  "7.2.2"
+    },
+    {
+        "minecraft":  "1.20",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.83.0+1.20",
+        "modMenu":  "7.0.1"
+    },
+    {
+        "minecraft":  "1.19.4",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.87.2+1.19.4",
+        "modMenu":  "6.3.1"
+    },
+    {
+        "minecraft":  "1.19.3",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.76.1+1.19.3",
+        "modMenu":  "5.1.0"
+    },
+    {
+        "minecraft":  "1.19.2",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.77.0+1.19.2",
+        "modMenu":  "4.2.0-beta.2"
+    },
+    {
+        "minecraft":  "1.19.1",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.58.5+1.19.1",
+        "modMenu":  "4.0.5"
+    },
+    {
+        "minecraft":  "1.19",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.58.0+1.19",
+        "modMenu":  "4.0.4"
+    },
+    {
+        "minecraft":  "1.18.2",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.77.0+1.18.2",
+        "modMenu":  "3.2.5"
+    },
+    {
+        "minecraft":  "1.18.1",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.46.6+1.18",
+        "modMenu":  "3.0.1"
+    },
+    {
+        "minecraft":  "1.18",
+        "javaMinimum":  17,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.44.0+1.18",
+        "modMenu":  "3.0.1"
+    },
+    {
+        "minecraft":  "1.17.1",
+        "javaMinimum":  16,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.46.1+1.17",
+        "modMenu":  "2.0.17"
+    },
+    {
+        "minecraft":  "1.17",
+        "javaMinimum":  16,
+        "javaCompile":  17,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.36.0+1.17",
+        "modMenu":  "2.0.17"
+    },
+    {
+        "minecraft":  "1.16.5",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.42.0+1.16",
+        "modMenu":  "1.16.23"
+    },
+    {
+        "minecraft":  "1.16.4",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.29.3+1.16",
+        "modMenu":  "1.15.0"
+    },
+    {
+        "minecraft":  "1.16.3",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.25.0+build.415-1.16",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.16.2",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.20.1+build.401-1.16",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.16.1",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.18.0+build.387-1.16.1",
+        "modMenu":  "1.14.5+build.30"
+    },
+    {
+        "minecraft":  "1.16",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.13.1+build.370-1.16",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.15.2",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.28.5+1.15",
+        "modMenu":  "1.10.7"
+    },
+    {
+        "minecraft":  "1.15.1",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.4.27+build.286-1.15",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.15",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.4.24+build.279-1.15",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.14.4",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.28.5+1.14",
+        "modMenu":  "1.7.18"
+    },
+    {
+        "minecraft":  "1.14.3",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.3.0+build.198",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.14.2",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.3.0+build.185",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.14.1",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.3.0-pre+build.157a",
+        "modMenu":  null
+    },
+    {
+        "minecraft":  "1.14",
+        "javaMinimum":  8,
+        "javaCompile":  8,
+        "fabricLoader":  "0.16.14",
+        "fabricApi":  "0.2.7+build.127",
+        "modMenu":  null
+    }
+]

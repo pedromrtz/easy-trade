@@ -1,0 +1,19 @@
+{
+	"trade-assistant.labels.button.accessible": "Alternar etiquetas de libros encantados",
+	"trade-assistant.labels.tooltip.enabled": "Etiquetas de encantamientos: activadas",
+	"trade-assistant.labels.tooltip.disabled": "Etiquetas de encantamientos: desactivadas",
+	"key.category.trade-assistant.controls": "Trade Assistant",
+	"key.trade-assistant.cycle_trades": "Renovar ofertas del aldeano",
+	"trade-assistant.cycling.tooltip": "Renovar ofertas",
+	"trade-assistant.cycling.locked": "Solo se pueden renovar las ofertas de aldeanos novatos sin intercambios",
+	"trade-assistant.cycling.waiting": "Renovando ofertas...",
+	"trade-assistant.config.title": "Configuración de Trade Assistant",
+	"trade-assistant.config.labels": "Etiquetas de libros encantados",
+	"trade-assistant.config.previews": "Vista previa de intercambios bloqueados",
+	"trade-assistant.config.cycling": "Ciclado de intercambios",
+	"trade-assistant.config.enabled": "Activado",
+	"trade-assistant.config.disabled": "Desactivado",
+	"trade-assistant.config.done": "Listo",
+	"trade-assistant.config.cancel": "Cancelar",
+	"trade-assistant.config.save": "Guardar y salir"
+}

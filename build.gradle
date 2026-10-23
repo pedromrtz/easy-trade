@@ -2,14 +2,31 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 plugins {
-	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}" apply false
+}
+
+def selectedMinecraftTarget = providers.gradleProperty("mcTarget").getOrElse(project.minecraft_version)
+def defaultMinecraftTarget = project.minecraft_version
+apply plugin: selectedMinecraftTarget.startsWith("26.")	? "net.fabricmc.fabric-loom" : "net.fabricmc.fabric-loom-remap"
+
+def targetMatrixFile = layout.projectDirectory.file("gradle/minecraft-targets.json").asFile
+def targetMatrixText = targetMatrixFile.getText("UTF-8").replaceFirst("^\\uFEFF", "")
+def targetMatrix = new JsonSlurper().parseText(targetMatrixText)
+def tradeAssistantTarget = targetMatrix.find { it.minecraft == selectedMinecraftTarget }
+if (tradeAssistantTarget == null) {
+	throw new GradleException("Unsupported mcTarget '${selectedMinecraftTarget}'. See gradle/minecraft-targets.json.")
+}
+if (selectedMinecraftTarget == project.minecraft_version) {
+	// Preserve the verified baseline dependency unless the target is explicitly overridden.
+	tradeAssistantTarget.fabricApi = providers.gradleProperty("fabric_api_version").getOrElse(tradeAssistantTarget.fabricApi)
 }
 
 loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"easy-trade" {
+		"trade-assistant" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
@@ -17,15 +34,27 @@ loom {
 }
 
 dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	def minecraftTarget = tradeAssistantTarget.minecraft
+	minecraft "com.mojang:minecraft:${minecraftTarget}"
+	def mappedMinecraft = !selectedMinecraftTarget.startsWith("26.")
+	if (mappedMinecraft) {
+		mappings loom.officialMojangMappings()
+		modImplementation "net.fabricmc:fabric-loader:${tradeAssistantTarget.fabricLoader}"
+		// Fabric API is required by the networking, input, and entity interaction integrations.
+		modImplementation "net.fabricmc.fabric-api:fabric-api:${tradeAssistantTarget.fabricApi}"
+	} else {
+		implementation "net.fabricmc:fabric-loader:${tradeAssistantTarget.fabricLoader}"
+		implementation "net.fabricmc.fabric-api:fabric-api:${tradeAssistantTarget.fabricApi}"
+	}
 
 	// Mod Menu is only needed at compile time; the integration is optional at runtime.
-	compileOnly "com.terraformersmc:modmenu:21.0.0"
+	if (tradeAssistantTarget.modMenu) {
+		if (mappedMinecraft) {
+			modCompileOnly "com.terraformersmc:modmenu:${tradeAssistantTarget.modMenu}"
+		} else {
+			compileOnly "com.terraformersmc:modmenu:${tradeAssistantTarget.modMenu}"
+		}
+	}
 }
 
 repositories {
@@ -34,21 +63,196 @@ repositories {
 	}
 }
 
-def easyTradeLanguageBundle = layout.projectDirectory.file("src/localization/easy-trade-languages.json")
-def generatedEasyTradeLanguages = layout.buildDirectory.dir("generated/easy-trade-languages")
-sourceSets.client.resources.srcDir(generatedEasyTradeLanguages)
+def targetSourceRoot = layout.projectDirectory.dir("src/versions/${selectedMinecraftTarget}").asFile
+def generatedTargetCommonCompatibility = layout.buildDirectory.dir("generated/sources/target-common/java")
+def generatedTargetClientCompatibility = layout.buildDirectory.dir("generated/sources/target-client/java")
+if (targetSourceRoot.exists()) {
+	["main/java", "main/resources", "client/java", "client/resources"].each { sourcePath ->
+		def targetPath = new File(targetSourceRoot, sourcePath)
+		if (targetPath.exists()) {
+			def sourceSet = sourcePath.startsWith("main/") ? sourceSets.main : sourceSets.client
+			if (sourcePath.endsWith("/java")) {
+				sourceSet.java.srcDir(targetPath)
+			} else {
+				sourceSet.resources.srcDir(targetPath)
+			}
+		}
+	}
+} else if (!selectedMinecraftTarget.equals("26.3")) {
+	logger.lifecycle("No isolated source tree exists for Minecraft ${selectedMinecraftTarget}; using the root source sets until that target is ported.")
+}
 
-tasks.register("generateEasyTradeLanguages") {
-	inputs.file(easyTradeLanguageBundle)
-	outputs.dir(generatedEasyTradeLanguages)
+if (selectedMinecraftTarget == "1.21.11") {
+	def preparedTargetMain = layout.buildDirectory.dir("generated/sources/target-main/java")
+	sourceSets.main.java.setSrcDirs([preparedTargetMain])
+	tasks.register("prepareTargetMainSources", Sync) {
+		into(preparedTargetMain)
+		from("src/main/java") {
+			exclude(
+				"com/pedromartz/tradeassistant/trading/LockedTradeOfferService.java",
+				"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeAccessor.java",
+				"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeMixin.java"
+			)
+		}
+		from(new File(targetSourceRoot, "main/java"))
+		from(generatedTargetCommonCompatibility)
+		dependsOn("generateTargetCommonCompatibility")
+	}
+	tasks.named("compileJava") {
+		dependsOn(tasks.named("prepareTargetMainSources"))
+	}
+		tasks.matching { it.name == "sourcesJar" }.configureEach {
+			dependsOn(tasks.named("prepareTargetMainSources"))
+		}
+	def preparedTargetClient = layout.buildDirectory.dir("generated/sources/target-client-root/java")
+	sourceSets.client.java.setSrcDirs([preparedTargetClient])
+	tasks.register("prepareTargetClientSources", Sync) {
+		into(preparedTargetClient)
+		from("src/client/java") {
+			exclude(
+				"com/pedromartz/tradeassistant/client/TradeCyclingButton.java",
+				"com/pedromartz/tradeassistant/client/EnchantmentLabelsToggleButton.java",
+				"com/pedromartz/tradeassistant/client/EnchantmentTradeLabelRenderer.java",
+				"com/pedromartz/tradeassistant/client/mixin/MerchantScreenMixin.java"
+			)
+		}
+		from(new File(targetSourceRoot, "client/java"))
+		from(generatedTargetClientCompatibility)
+		dependsOn("generateTargetClientCompatibility")
+	}
+	tasks.named("compileClientJava") {
+		dependsOn(tasks.named("prepareTargetClientSources"))
+	}
+	tasks.matching { it.name == "sourcesJar" }.configureEach {
+		dependsOn(tasks.named("prepareTargetClientSources"))
+	}
+}
+
+if (selectedMinecraftTarget != "1.21.11") {
+	sourceSets.main.java.srcDir(generatedTargetCommonCompatibility)
+}
+tasks.register("generateTargetCommonCompatibility") {
+	inputs.property("minecraftTarget", selectedMinecraftTarget)
+	outputs.dir(generatedTargetCommonCompatibility)
+	doLast {
+		def outputRoot = generatedTargetCommonCompatibility.get().asFile
+		if (outputRoot.exists() && !outputRoot.deleteDir()) {
+			throw new GradleException("Could not clean generated common target compatibility source")
+		}
+		def c2s = selectedMinecraftTarget.startsWith("26.") ? "serverboundPlay" : "playC2S"
+		def s2c = selectedMinecraftTarget.startsWith("26.") ? "clientboundPlay" : "playS2C"
+		def source = """package com.pedromartz.tradeassistant.network;
+
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+
+public final class TargetPayloadRegistration {
+	private TargetPayloadRegistration() { }
+
+	public static void register() {
+		PayloadTypeRegistry.${c2s}().register(RequestLockedTradesPayload.TYPE, RequestLockedTradesPayload.STREAM_CODEC);
+		PayloadTypeRegistry.${s2c}().register(LockedTradesPayload.TYPE, LockedTradesPayload.STREAM_CODEC);
+		PayloadTypeRegistry.${c2s}().register(CycleTradesPayload.TYPE, CycleTradesPayload.STREAM_CODEC);
+		PayloadTypeRegistry.${s2c}().register(CycleTradesResultPayload.TYPE, CycleTradesResultPayload.STREAM_CODEC);
+	}
+}
+"""
+		def sourceFile = new File(outputRoot, "com/pedromartz/tradeassistant/network/TargetPayloadRegistration.java")
+		sourceFile.parentFile.mkdirs()
+		sourceFile.setText(source, "UTF-8")
+	}
+}
+tasks.named("compileJava") {
+	dependsOn(tasks.named("generateTargetCommonCompatibility"))
+}
+tasks.matching { it.name == "sourcesJar" }.configureEach {
+	dependsOn(tasks.named("generateTargetCommonCompatibility"))
+}
+
+if (selectedMinecraftTarget != "1.21.11") {
+	sourceSets.client.java.srcDir(generatedTargetClientCompatibility)
+}
+tasks.register("generateTargetClientCompatibility") {
+	inputs.property("minecraftTarget", selectedMinecraftTarget)
+	outputs.dir(generatedTargetClientCompatibility)
+	doLast {
+		def outputRoot = generatedTargetClientCompatibility.get().asFile
+		if (outputRoot.exists() && !outputRoot.deleteDir()) {
+			throw new GradleException("Could not clean generated target compatibility source")
+		}
+		def screenExpression = selectedMinecraftTarget == "26.3" || selectedMinecraftTarget == "26.2"
+			? "Minecraft.getInstance().gui.screen()"
+			: "Minecraft.getInstance().screen"
+		def source = """package com.pedromartz.tradeassistant.client;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+
+final class TargetScreenAccess {
+	private TargetScreenAccess() { }
+
+	static Screen current() {
+		return ${screenExpression};
+	}
+}
+"""
+		def sourceFile = new File(outputRoot, "com/pedromartz/tradeassistant/client/TargetScreenAccess.java")
+		sourceFile.parentFile.mkdirs()
+		sourceFile.setText(source, "UTF-8")
+		def keyMappingHelper = selectedMinecraftTarget.startsWith("26.")
+			? "net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper"
+			: "net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper"
+		def registrationMethod = selectedMinecraftTarget.startsWith("26.") ? "registerKeyMapping" : "registerKeyBinding"
+		def keyMappingSource = """package com.pedromartz.tradeassistant.client;
+
+import ${keyMappingHelper};
+import net.minecraft.client.KeyMapping;
+
+final class TargetKeyMappingRegistration {
+	private TargetKeyMappingRegistration() { }
+
+	static KeyMapping register(KeyMapping mapping) {
+		return ${keyMappingHelper.substring(keyMappingHelper.lastIndexOf('.') + 1)}.${registrationMethod}(mapping);
+	}
+}
+"""
+		def keyMappingFile = new File(outputRoot, "com/pedromartz/tradeassistant/client/TargetKeyMappingRegistration.java")
+		keyMappingFile.parentFile.mkdirs()
+		keyMappingFile.setText(keyMappingSource, "UTF-8")
+	}
+}
+tasks.named("compileClientJava") {
+	dependsOn(tasks.named("generateTargetClientCompatibility"))
+}
+tasks.matching { it.name == "sourcesJar" }.configureEach {
+	dependsOn(tasks.named("generateTargetClientCompatibility"))
+}
+
+if (!tradeAssistantTarget.modMenu) {
+	sourceSets.client.java.exclude("com/pedromartz/tradeassistant/client/TradeAssistantModMenu.java")
+}
+
+def targetArchiveName = selectedMinecraftTarget == project.minecraft_version
+	? project.name
+	: "${project.name}-mc-${selectedMinecraftTarget}"
+base {
+	archivesName = targetArchiveName
+}
+
+def tradeAssistantLanguageBundle = layout.projectDirectory.file("src/localization/trade-assistant-languages.json")
+def generatedTradeAssistantLanguages = layout.buildDirectory.dir("generated/trade-assistant-languages")
+sourceSets.client.resources.srcDir(generatedTradeAssistantLanguages)
+
+tasks.register("generateTradeAssistantLanguages") {
+	inputs.file(tradeAssistantLanguageBundle)
+	outputs.dir(generatedTradeAssistantLanguages)
 
 	doLast {
-		def bundle = new JsonSlurper().parse(easyTradeLanguageBundle.asFile)
+		def bundle = new JsonSlurper().parse(tradeAssistantLanguageBundle.asFile)
 		if (!bundle.keys || !bundle.locales || !bundle.translations.en) {
-			throw new GradleException("The Easy Trade language bundle must define keys, locales, and English translations")
+			throw new GradleException("The Trade Assistant language bundle must define keys, locales, and English translations")
 		}
 		if (bundle.locales.toSet().size() != bundle.locales.size()) {
-			throw new GradleException("The Easy Trade language bundle contains duplicate locales")
+			throw new GradleException("The Trade Assistant language bundle contains duplicate locales")
 		}
 		bundle.translations.each { language, translations ->
 			if (translations.size() != bundle.keys.size()) {
@@ -56,39 +260,39 @@ tasks.register("generateEasyTradeLanguages") {
 			}
 		}
 
-		def outputRoot = generatedEasyTradeLanguages.get().asFile
+		def outputRoot = generatedTradeAssistantLanguages.get().asFile
 		if (outputRoot.exists() && !outputRoot.deleteDir()) {
-			throw new GradleException("Could not clean generated Easy Trade language resources")
+			throw new GradleException("Could not clean generated Trade Assistant language resources")
 		}
 
 		bundle.locales.each { locale ->
 			if (locale != "en_us" && locale != "es_es") {
 				def language = locale.split("_")[0]
 				def translations = bundle.translations[language] ?: bundle.translations["en"]
-				def messages = ["key.category.easy-trade.controls": "Easy Trade"]
+				def messages = ["key.category.trade-assistant.controls": "Trade Assistant"]
 				bundle.keys.eachWithIndex { key, index -> messages[key] = translations[index] }
 				messages.putAll(language == "es" ? [
-					"easy-trade.config.title": "Configuración de Easy Trade",
-					"easy-trade.config.labels": "Etiquetas de libros encantados",
-					"easy-trade.config.previews": "Vista previa de intercambios bloqueados",
-					"easy-trade.config.cycling": "Ciclado de intercambios",
-					"easy-trade.config.enabled": "Activado",
-					"easy-trade.config.disabled": "Desactivado",
-					"easy-trade.config.done": "Listo",
-					"easy-trade.config.cancel": "Cancelar",
-					"easy-trade.config.save": "Guardar y salir"
+					"trade-assistant.config.title": "Configuración de Trade Assistant",
+					"trade-assistant.config.labels": "Etiquetas de libros encantados",
+					"trade-assistant.config.previews": "Vista previa de intercambios bloqueados",
+					"trade-assistant.config.cycling": "Ciclado de intercambios",
+					"trade-assistant.config.enabled": "Activado",
+					"trade-assistant.config.disabled": "Desactivado",
+					"trade-assistant.config.done": "Listo",
+					"trade-assistant.config.cancel": "Cancelar",
+					"trade-assistant.config.save": "Guardar y salir"
 				] : [
-					"easy-trade.config.title": "Easy Trade Settings",
-					"easy-trade.config.labels": "Enchanted-book labels",
-					"easy-trade.config.previews": "Locked-trade previews",
-					"easy-trade.config.cycling": "Trade cycling",
-					"easy-trade.config.enabled": "Enabled",
-					"easy-trade.config.disabled": "Disabled",
-					"easy-trade.config.done": "Done",
-					"easy-trade.config.cancel": "Cancel",
-					"easy-trade.config.save": "Save & Exit"
+					"trade-assistant.config.title": "Trade Assistant Settings",
+					"trade-assistant.config.labels": "Enchanted-book labels",
+					"trade-assistant.config.previews": "Locked-trade previews",
+					"trade-assistant.config.cycling": "Trade cycling",
+					"trade-assistant.config.enabled": "Enabled",
+					"trade-assistant.config.disabled": "Disabled",
+					"trade-assistant.config.done": "Done",
+					"trade-assistant.config.cancel": "Cancel",
+					"trade-assistant.config.save": "Save & Exit"
 				])
-				def languageFile = new File(outputRoot, "assets/easy-trade/lang/${locale}.json")
+				def languageFile = new File(outputRoot, "assets/trade-assistant/lang/${locale}.json")
 				languageFile.parentFile.mkdirs()
 				languageFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(messages)) + System.lineSeparator(), "UTF-8")
 			}
@@ -97,17 +301,17 @@ tasks.register("generateEasyTradeLanguages") {
 }
 
 tasks.named("processClientResources") {
-	dependsOn(tasks.named("generateEasyTradeLanguages"))
+	dependsOn(tasks.named("generateTradeAssistantLanguages"))
 }
 
 tasks.matching { it.name == "sourcesJar" }.configureEach {
-	dependsOn(tasks.named("generateEasyTradeLanguages"))
+	dependsOn(tasks.named("generateTradeAssistantLanguages"))
 }
 
 fabricApi {
 	configureTests {
 		createSourceSet = true
-		modId = "easy-trade-test"
+		modId = "trade-assistant-test"
 		enableClientGameTests = false
 		eula = true
 	}
@@ -116,14 +320,50 @@ fabricApi {
 processResources {
 	def version = project.version
 	inputs.property "version", version
+	inputs.property "minecraft_version", tradeAssistantTarget.minecraft
+	inputs.property "loader_version", tradeAssistantTarget.fabricLoader
+	inputs.property "java_minimum", tradeAssistantTarget.javaMinimum
+	inputs.property "modmenu_version", tradeAssistantTarget.modMenu ?: "none"
 
 	filesMatching("fabric.mod.json") {
-		expand "version": version
+		expand(
+			"version": version,
+			"minecraft_version": tradeAssistantTarget.minecraft,
+			"loader_version": tradeAssistantTarget.fabricLoader,
+			"java_minimum": tradeAssistantTarget.javaMinimum
+		)
+	}
+
+	doLast {
+		if (!tradeAssistantTarget.modMenu) {
+			def metadataFile = new File(destinationDir, "fabric.mod.json")
+			def metadata = new JsonSlurper().parse(metadataFile)
+			metadata.entrypoints.remove("modmenu")
+			metadataFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(metadata)) + System.lineSeparator(), "UTF-8")
+		}
+		def mixinFile = new File(destinationDir, "trade-assistant.mixins.json")
+		if (mixinFile.isFile()) {
+			def mixin = new JsonSlurper().parse(mixinFile)
+			mixin.compatibilityLevel = "JAVA_${tradeAssistantTarget.javaCompile}"
+			mixinFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(mixin)) + System.lineSeparator(), "UTF-8")
+		}
+	}
+}
+
+tasks.named("processClientResources") {
+	inputs.property("minecraftTarget", selectedMinecraftTarget)
+	doLast {
+		def mixinFile = new File(destinationDir, "trade-assistant.client.mixins.json")
+		if (mixinFile.isFile()) {
+			def mixin = new JsonSlurper().parse(mixinFile)
+			mixin.compatibilityLevel = "JAVA_${tradeAssistantTarget.javaCompile}"
+			mixinFile.setText(JsonOutput.prettyPrint(JsonOutput.toJson(mixin)) + System.lineSeparator(), "UTF-8")
+		}
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 25
+	it.options.release = tradeAssistantTarget.javaCompile
 }
 
 java {
@@ -132,8 +372,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_25
-	targetCompatibility = JavaVersion.VERSION_25
+	sourceCompatibility = JavaVersion.toVersion(tradeAssistantTarget.javaCompile)
+	targetCompatibility = JavaVersion.toVersion(tradeAssistantTarget.javaCompile)
 }
 
 jar {
@@ -142,5 +382,88 @@ jar {
 
 	from("LICENSE") {
 		rename { "${it}_$projectName"}
+	}
+}
+
+def targetJarTaskName = selectedMinecraftTarget.startsWith("26.") ? "jar" : "remapJar"
+def targetJarTask = tasks.named(targetJarTaskName)
+def targetArtifactFile = targetJarTask.flatMap { it.archiveFile }
+tasks.register("verifyTargetArtifact") {
+	group = "verification"
+	description = "Validates the distributable JAR and metadata for Minecraft ${selectedMinecraftTarget}."
+	dependsOn(targetJarTask)
+	inputs.file(targetArtifactFile)
+	doLast {
+		def artifact = targetArtifactFile.get().asFile
+		if (!artifact.isFile() || artifact.name.endsWith("-sources.jar") || artifact.name.endsWith("-dev.jar")) {
+			throw new GradleException("Expected a runnable distributable JAR, got: ${artifact}")
+		}
+		if (selectedMinecraftTarget != defaultMinecraftTarget && !artifact.name.contains("-mc-${selectedMinecraftTarget}-")) {
+			throw new GradleException("Artifact name does not identify Minecraft ${selectedMinecraftTarget}: ${artifact.name}")
+		}
+
+		def zip = new java.util.zip.ZipFile(artifact)
+		try {
+			def metadataEntry = zip.getEntry("fabric.mod.json")
+			if (metadataEntry == null) {
+				throw new GradleException("${artifact.name} does not contain fabric.mod.json")
+			}
+			def metadata = new JsonSlurper().parse(zip.getInputStream(metadataEntry))
+			if (metadata.id != "trade-assistant" || metadata.depends.minecraft != tradeAssistantTarget.minecraft) {
+				throw new GradleException("Wrong mod ID or Minecraft target in ${artifact.name}")
+			}
+			if (!(metadata.mixins instanceof Collection) || !metadata.mixins.contains("trade-assistant.mixins.json") ||
+				!metadata.mixins.any { it instanceof Map && it.config == "trade-assistant.client.mixins.json" && it.environment == "client" }) {
+				throw new GradleException("Common/client mixin declarations are incomplete in ${artifact.name}")
+			}
+			if (!metadata.depends.fabricloader.startsWith(">=${tradeAssistantTarget.fabricLoader}") ||
+				!metadata.depends.java.startsWith(">=${tradeAssistantTarget.javaMinimum}") || !metadata.depends.containsKey("fabric-api")) {
+				throw new GradleException("Loader, Java, or Fabric API metadata is incomplete in ${artifact.name}")
+			}
+			if (tradeAssistantTarget.modMenu && !metadata.entrypoints.modmenu) {
+				throw new GradleException("The Mod Menu entrypoint is missing for ${selectedMinecraftTarget}")
+			}
+			if (!tradeAssistantTarget.modMenu && metadata.entrypoints.modmenu) {
+				throw new GradleException("Mod Menu is unavailable for ${selectedMinecraftTarget}, but its entrypoint remains enabled")
+			}
+
+			["trade-assistant.mixins.json", "trade-assistant.client.mixins.json"].each { mixinName ->
+				def mixinEntry = zip.getEntry(mixinName)
+				if (mixinEntry == null) {
+					throw new GradleException("Missing mixin config ${mixinName} in ${artifact.name}")
+				}
+				def mixin = new JsonSlurper().parse(zip.getInputStream(mixinEntry))
+				if (mixin.compatibilityLevel != "JAVA_${tradeAssistantTarget.javaCompile}") {
+					throw new GradleException("${mixinName} has compatibility ${mixin.compatibilityLevel}; expected JAVA_${tradeAssistantTarget.javaCompile}")
+				}
+			}
+
+			["com/pedromartz/tradeassistant/TradeAssistantMod.class", "com/pedromartz/tradeassistant/client/TradeAssistantClient.class"].each { className ->
+				if (zip.getEntry(className) == null) {
+					throw new GradleException("Missing required class ${className} in ${artifact.name}")
+				}
+			}
+			if (zip.entries().toList().any { it.name.contains("TradeCyclingGameTests") || it.name.startsWith("com/pedromartz/tradeassistant/test/") }) {
+				throw new GradleException("Test-only classes were packaged in ${artifact.name}")
+			}
+
+			def classEntry = zip.getEntry("com/pedromartz/tradeassistant/TradeAssistantMod.class")
+			def classInput = new DataInputStream(zip.getInputStream(classEntry))
+			try {
+				if (Integer.toUnsignedLong(classInput.readInt()) != 0xCAFEBABEL) {
+					throw new GradleException("Invalid class file header in ${artifact.name}")
+				}
+				classInput.readUnsignedShort()
+				def classMajor = classInput.readUnsignedShort()
+				if (classMajor != tradeAssistantTarget.javaCompile + 44) {
+					throw new GradleException("Class bytecode ${classMajor} does not match Java ${tradeAssistantTarget.javaCompile}")
+				}
+			} finally {
+				classInput.close()
+			}
+			println("Validated ${artifact}")
+		} finally {
+			zip.close()
+		}
 	}
 }

@@ -1,40 +1,40 @@
 {
 	"schemaVersion": 1,
-	"id": "easy-trade",
+	"id": "trade-assistant",
 	"version": "${version}",
-	"name": "Easy Trade",
+	"name": "Trade Assistant",
 	"description": "Quality-of-life tools for villager trading.",
 	"authors": [
 		"pedromartz"
 	],
 	"contact": {
-		"homepage": "https://github.com/pedromrtz/easy-trade"
+		"homepage": "https://github.com/pedromrtz/trade-assistant"
 	},
 	"license": "MIT",
-	"icon": "assets/easy-trade/icon.png",
+	"icon": "assets/trade-assistant/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.pedromartz.easytrade.EasyTradeMod"
+			"com.pedromartz.tradeassistant.TradeAssistantMod"
 		],
 		"client": [
-			"com.pedromartz.easytrade.client.EasyTradeClient"
+			"com.pedromartz.tradeassistant.client.TradeAssistantClient"
 		],
 		"modmenu": [
-			"com.pedromartz.easytrade.client.EasyTradeModMenu"
+			"com.pedromartz.tradeassistant.client.TradeAssistantModMenu"
 		]
 	},
 	"mixins": [
-		"easy-trade.mixins.json",
+		"trade-assistant.mixins.json",
 		{
-			"config": "easy-trade.client.mixins.json",
+			"config": "trade-assistant.client.mixins.json",
 			"environment": "client"
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.19.5",
-		"minecraft": "~26.3",
-		"java": ">=25",
+		"fabricloader": ">=${loader_version}",
+		"minecraft": "${minecraft_version}",
+		"java": ">=${java_minimum}",
 		"fabric-api": "*"
 	},
 	"suggests": {
