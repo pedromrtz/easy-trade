@@ -76,7 +76,7 @@ public abstract class MerchantScreenMixin implements TradeCyclingScreen {
 		}
 	}
 
-	@Inject(method = "render", at = @At("HEAD"))
+	@Inject(method = "renderContents", at = @At("HEAD"))
 	private void tradeAssistant$updateCyclingControls(
 		final GuiGraphics graphics, final int mouseX, final int mouseY, final float delta, final CallbackInfo callbackInfo
 	) {
@@ -99,7 +99,7 @@ public abstract class MerchantScreenMixin implements TradeCyclingScreen {
 		}
 	}
 
-	@Inject(method = "render", at = @At("TAIL"))
+	@Inject(method = "renderContents", at = @At("TAIL"))
 	private void tradeAssistant$renderEnchantmentLabels(
 		final GuiGraphics graphics, final int mouseX, final int mouseY, final float delta, final CallbackInfo callbackInfo
 	) {
