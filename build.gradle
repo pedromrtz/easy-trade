@@ -82,17 +82,33 @@ if (targetSourceRoot.exists()) {
 	logger.lifecycle("No isolated source tree exists for Minecraft ${selectedMinecraftTarget}; using the root source sets until that target is ported.")
 }
 
-if (selectedMinecraftTarget == "1.21.11") {
+if (selectedMinecraftTarget == "1.21.11" || selectedMinecraftTarget == "1.21.10" || selectedMinecraftTarget == "1.21.9" || selectedMinecraftTarget == "1.21.8" || selectedMinecraftTarget == "1.21.7" || selectedMinecraftTarget == "1.21.6" || selectedMinecraftTarget == "1.21.5" || selectedMinecraftTarget == "1.21.4" || selectedMinecraftTarget == "1.21.3" || selectedMinecraftTarget == "1.21.2" || selectedMinecraftTarget == "1.21.1" || selectedMinecraftTarget == "1.21" || selectedMinecraftTarget == "1.20.6") {
 	def preparedTargetMain = layout.buildDirectory.dir("generated/sources/target-main/java")
 	sourceSets.main.java.setSrcDirs([preparedTargetMain])
 	tasks.register("prepareTargetMainSources", Sync) {
 		into(preparedTargetMain)
 		from("src/main/java") {
-			exclude(
-				"com/pedromartz/tradeassistant/trading/LockedTradeOfferService.java",
-				"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeAccessor.java",
-				"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeMixin.java"
-			)
+			if (selectedMinecraftTarget == "1.21.11") {
+				exclude(
+					"com/pedromartz/tradeassistant/trading/LockedTradeOfferService.java",
+					"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeAccessor.java",
+					"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeMixin.java"
+				)
+			} else {
+				exclude(
+					"com/pedromartz/tradeassistant/TradeAssistantMod.java",
+					"com/pedromartz/tradeassistant/trading/LockedTradeOfferService.java",
+					"com/pedromartz/tradeassistant/trading/TradeCyclingService.java",
+					"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeAccessor.java",
+					"com/pedromartz/tradeassistant/mixin/AbstractVillagerTradeMixin.java",
+					"com/pedromartz/tradeassistant/mixin/VillagerLockedTradesMixin.java",
+					"com/pedromartz/tradeassistant/network/LockedTradeServerNetworking.java",
+					"com/pedromartz/tradeassistant/network/LockedTradesPayload.java",
+					"com/pedromartz/tradeassistant/network/RequestLockedTradesPayload.java",
+					"com/pedromartz/tradeassistant/network/CycleTradesPayload.java",
+					"com/pedromartz/tradeassistant/network/CycleTradesResultPayload.java"
+				)
+			}
 		}
 		from(new File(targetSourceRoot, "main/java"))
 		from(generatedTargetCommonCompatibility)
@@ -115,6 +131,19 @@ if (selectedMinecraftTarget == "1.21.11") {
 				"com/pedromartz/tradeassistant/client/EnchantmentTradeLabelRenderer.java",
 				"com/pedromartz/tradeassistant/client/mixin/MerchantScreenMixin.java"
 			)
+			if (selectedMinecraftTarget == "1.21.8" || selectedMinecraftTarget == "1.21.7" || selectedMinecraftTarget == "1.21.6" || selectedMinecraftTarget == "1.21.5" || selectedMinecraftTarget == "1.21.4" || selectedMinecraftTarget == "1.21.3" || selectedMinecraftTarget == "1.21.2" || selectedMinecraftTarget == "1.21.1" || selectedMinecraftTarget == "1.21" || selectedMinecraftTarget == "1.20.6") {
+				exclude(
+					"com/pedromartz/tradeassistant/client/ClientTradeCycling.java",
+					"com/pedromartz/tradeassistant/client/TradeAssistantConfigScreen.java",
+					"com/pedromartz/tradeassistant/client/mixin/TradeCyclingKeyMixin.java"
+				)
+			}
+			if (selectedMinecraftTarget == "1.21.1" || selectedMinecraftTarget == "1.21" || selectedMinecraftTarget == "1.20.6") {
+				exclude("com/pedromartz/tradeassistant/client/EnchantmentTradeLabelRenderer.java")
+			}
+			if (selectedMinecraftTarget == "1.21.10" || selectedMinecraftTarget == "1.21.9" || selectedMinecraftTarget == "1.21.8" || selectedMinecraftTarget == "1.21.7" || selectedMinecraftTarget == "1.21.6" || selectedMinecraftTarget == "1.21.5" || selectedMinecraftTarget == "1.21.4" || selectedMinecraftTarget == "1.21.3" || selectedMinecraftTarget == "1.21.2" || selectedMinecraftTarget == "1.21.1" || selectedMinecraftTarget == "1.21" || selectedMinecraftTarget == "1.20.6") {
+				exclude("com/pedromartz/tradeassistant/client/ClientLockedTradePreviews.java")
+			}
 		}
 		from(new File(targetSourceRoot, "client/java"))
 		from(generatedTargetClientCompatibility)
@@ -128,7 +157,7 @@ if (selectedMinecraftTarget == "1.21.11") {
 	}
 }
 
-if (selectedMinecraftTarget != "1.21.11") {
+if (selectedMinecraftTarget != "1.21.11" && selectedMinecraftTarget != "1.21.10" && selectedMinecraftTarget != "1.21.9" && selectedMinecraftTarget != "1.21.8" && selectedMinecraftTarget != "1.21.7" && selectedMinecraftTarget != "1.21.6" && selectedMinecraftTarget != "1.21.5" && selectedMinecraftTarget != "1.21.4" && selectedMinecraftTarget != "1.21.3" && selectedMinecraftTarget != "1.21.2" && selectedMinecraftTarget != "1.21.1" && selectedMinecraftTarget != "1.21" && selectedMinecraftTarget != "1.20.6") {
 	sourceSets.main.java.srcDir(generatedTargetCommonCompatibility)
 }
 tasks.register("generateTargetCommonCompatibility") {
@@ -168,7 +197,7 @@ tasks.matching { it.name == "sourcesJar" }.configureEach {
 	dependsOn(tasks.named("generateTargetCommonCompatibility"))
 }
 
-if (selectedMinecraftTarget != "1.21.11") {
+if (selectedMinecraftTarget != "1.21.11" && selectedMinecraftTarget != "1.21.10" && selectedMinecraftTarget != "1.21.9" && selectedMinecraftTarget != "1.21.8" && selectedMinecraftTarget != "1.21.7" && selectedMinecraftTarget != "1.21.6" && selectedMinecraftTarget != "1.21.5" && selectedMinecraftTarget != "1.21.4" && selectedMinecraftTarget != "1.21.3" && selectedMinecraftTarget != "1.21.2" && selectedMinecraftTarget != "1.21.1" && selectedMinecraftTarget != "1.21" && selectedMinecraftTarget != "1.20.6") {
 	sourceSets.client.java.srcDir(generatedTargetClientCompatibility)
 }
 tasks.register("generateTargetClientCompatibility") {
@@ -314,6 +343,21 @@ fabricApi {
 		modId = "trade-assistant-test"
 		enableClientGameTests = false
 		eula = true
+	}
+}
+
+if (selectedMinecraftTarget == "1.21.11" || selectedMinecraftTarget == "1.21.10" || selectedMinecraftTarget == "1.21.9" || selectedMinecraftTarget == "1.21.8" || selectedMinecraftTarget == "1.21.7" || selectedMinecraftTarget == "1.21.6" || selectedMinecraftTarget == "1.21.5" || selectedMinecraftTarget == "1.21.4" || selectedMinecraftTarget == "1.21.3" || selectedMinecraftTarget == "1.21.2" || selectedMinecraftTarget == "1.21.1" || selectedMinecraftTarget == "1.21" || selectedMinecraftTarget == "1.20.6") {
+	def preparedTargetGameTest = layout.buildDirectory.dir("generated/sources/target-gametest/java")
+	sourceSets.gametest.java.setSrcDirs([preparedTargetGameTest])
+	tasks.register("prepareTargetGameTestSources", Sync) {
+		into(preparedTargetGameTest)
+		from("src/gametest/java") {
+			exclude("com/pedromartz/tradeassistant/TradeCyclingGameTests.java")
+		}
+		from(new File(targetSourceRoot, "gametest/java"))
+	}
+	tasks.named("compileGametestJava") {
+		dependsOn(tasks.named("prepareTargetGameTestSources"))
 	}
 }
 

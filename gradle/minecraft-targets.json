@@ -35,7 +35,7 @@
         "minecraft":  "1.21.10",
         "javaMinimum":  21,
         "javaCompile":  21,
-        "fabricLoader":  "0.16.14",
+        "fabricLoader":  "0.17.2",
         "fabricApi":  "0.138.4+1.21.10",
         "modMenu":  "16.0.1"
     },
@@ -43,7 +43,7 @@
         "minecraft":  "1.21.9",
         "javaMinimum":  21,
         "javaCompile":  21,
-        "fabricLoader":  "0.16.14",
+        "fabricLoader":  "0.17.2",
         "fabricApi":  "0.134.1+1.21.9",
         "modMenu":  "16.0.1"
     },
